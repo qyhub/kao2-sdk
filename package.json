@@ -8,10 +8,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/qyhub/koa2-sdk.git"
+    "url": "https://github.com/qyhub/kao2-sdk.git"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
   "dependencies": {
     "debug": "^2.2.0",
     "jwt-simple": "^0.5.0",
