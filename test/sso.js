@@ -2,6 +2,7 @@ import Koa from 'koa';
 import mount from 'koa-mount';
 import mongodb from 'koa-mongo';
 import convert from 'koa-convert';
+import request from 'request';
 
 import {SSO} from '../../koa2-sdk';
 
@@ -30,8 +31,22 @@ app.use(mongo);
 
 app.use(async function(ctx, next) {
     ctx.auth = auth;
+
+    ctx.ajax = function(options) {
+        return new Promise(function(resolve, reject) {
+            request(options, function(error, response, body) {
+                if (error) return reject(error);
+                resolve(response);
+            })
+        });
+    };
+
     await next();
 });
+
+
+
+
 
 var options = {
     client_id: process.env.ID, //企业+应用的ID

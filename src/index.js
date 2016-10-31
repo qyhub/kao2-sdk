@@ -1,4 +1,4 @@
-var sso = require('./lib/sso');
+var sso =require('./lib/sso');
 var sync=require('./lib/sync');
 
 module.exports = {

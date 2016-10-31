@@ -1,10 +1,11 @@
 {
   "name": "koa2-sdk",
-  "version": "1.0.1",
-  "description": "",
-  "main": "index.js",
+  "version": "1.0.5",
+  "description": "qyhub.cn sdk for sso ",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel --optional runtime -d dist/ src/"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "babel-core": "^6.17.0",
+    "babel-polyfill": "^6.16.0",
     "babel-preset-es2015-node5": "^1.2.0",
     "babel-preset-stage-3": "^6.17.0",
     "babel-register": "^6.16.3",
