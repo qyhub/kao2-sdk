@@ -1,7 +1,8 @@
 var Koa = require('koa');
 var Router = require('koa-router');
 var request = require('request');
-var debug =require('debug')('koa2-sdk');
+var debug = require('debug')('koa2-sdk');
+var Url = require('url');
 
 var util = require('./util');
 var sync = require('./sync');
@@ -22,11 +23,18 @@ module.exports = function(options) {
 
     debug(options);
 
-    var auth=async function(ctx,next) {
-          var url = ssoUri + '?client_id=' + clientId + '&redirect_uri=' + redirectUrl + '&callback=' + authCallbackUrl;
-          console.log('redirect to', url);
-          ctx.status = 301;
-          ctx.redirect(url);
+    var auth = async function(ctx, next) {
+        if (ctx.querystring) {
+            if (redirectUrl.indexOf('?') > 0) {
+                redirectUrl += ctx.querystring;
+            } else {
+                redirectUrl += '?' + ctx.querystring;
+            }
+        }
+        var url = ssoUri + '?client_id=' + clientId + '&redirect_uri=' + redirectUrl + '&callback=' + authCallbackUrl;
+        console.log('redirect to', url);
+        ctx.status = 301;
+        ctx.redirect(url);
     }
 
     router.get('/auth', auth);
@@ -55,10 +63,12 @@ module.exports = function(options) {
         var userid = playload.userid;
         var userId = null;
         var users = ctx.mongo.collection('users');
-
+        var url = Url.parse(redirect_uri);
+        var sid = url.sid || null;
         debug("同步用户");
         var result = await sync.getSyncUsers({
             eid: playload.eid,
+            sid: sid,
             appId: clientId,
             appSecret: appSecret,
             homeHost: homeHost

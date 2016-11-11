@@ -6,6 +6,7 @@ var Koa = require('koa');
 var Router = require('koa-router');
 var request = require('request');
 var debug = require('debug')('koa2-sdk');
+var Url = require('url');
 
 var util = require('./util');
 var sync = require('./sync');
@@ -31,13 +32,20 @@ module.exports = function (options) {
                 while (1) {
                     switch (_context.prev = _context.next) {
                         case 0:
+                            if (ctx.querystring) {
+                                if (redirectUrl.indexOf('?') > 0) {
+                                    redirectUrl += ctx.querystring;
+                                } else {
+                                    redirectUrl += '?' + ctx.querystring;
+                                }
+                            }
                             url = ssoUri + '?client_id=' + clientId + '&redirect_uri=' + redirectUrl + '&callback=' + authCallbackUrl;
 
                             console.log('redirect to', url);
                             ctx.status = 301;
                             ctx.redirect(url);
 
-                        case 4:
+                        case 5:
                         case 'end':
                             return _context.stop();
                     }
@@ -54,7 +62,7 @@ module.exports = function (options) {
 
     router.get('/callback', function () {
         var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(ctx, next) {
-            var token, redirect_uri, playload, expires_at, now, userid, userId, users, result, user;
+            var token, redirect_uri, playload, expires_at, now, userid, userId, users, url, sid, result, user;
             return regeneratorRuntime.wrap(function _callee2$(_context2) {
                 while (1) {
                     switch (_context2.prev = _context2.next) {
@@ -96,23 +104,25 @@ module.exports = function (options) {
                             userid = playload.userid;
                             userId = null;
                             users = ctx.mongo.collection('users');
-
+                            url = Url.parse(redirect_uri);
+                            sid = url.sid || null;
 
                             debug("同步用户");
-                            _context2.next = 23;
+                            _context2.next = 25;
                             return sync.getSyncUsers({
                                 eid: playload.eid,
+                                sid: sid,
                                 appId: clientId,
                                 appSecret: appSecret,
                                 homeHost: homeHost
                             }, ctx);
 
-                        case 23:
+                        case 25:
                             result = _context2.sent;
 
                             debug("同步用户 result=", result);
 
-                            _context2.next = 27;
+                            _context2.next = 29;
                             return users.findOne({
                                 userid: userid,
                                 isdevared: {
@@ -120,11 +130,11 @@ module.exports = function (options) {
                                 }
                             });
 
-                        case 27:
+                        case 29:
                             user = _context2.sent;
 
                             if (user) {
-                                _context2.next = 33;
+                                _context2.next = 35;
                                 break;
                             }
 
@@ -133,19 +143,19 @@ module.exports = function (options) {
                             ctx.body = '非法用户';
                             return _context2.abrupt('return');
 
-                        case 33:
+                        case 35:
 
                             console.log('auto login by userid', user.userid);
-                            _context2.next = 36;
+                            _context2.next = 38;
                             return ctx.auth.loginByUserId(user.userid, false, 0);
 
-                        case 36:
+                        case 38:
                             result = _context2.sent;
 
                             console.log('auto login result', result);
 
                             if (!result) {
-                                _context2.next = 43;
+                                _context2.next = 45;
                                 break;
                             }
 
@@ -154,7 +164,7 @@ module.exports = function (options) {
                             ctx.body = '正在跳转到首页...';
                             return _context2.abrupt('return', ctx.redirect(redirect_uri));
 
-                        case 43:
+                        case 45:
                         case 'end':
                             return _context2.stop();
                     }

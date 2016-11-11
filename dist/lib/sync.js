@@ -68,7 +68,7 @@ Sync.getSyncUsers = function () {
                         tokenInfo = _context2.sent;
 
                         if (!(tokenInfo && tokenInfo.errcode === 0)) {
-                            _context2.next = 45;
+                            _context2.next = 46;
                             break;
                         }
 
@@ -102,11 +102,16 @@ Sync.getSyncUsers = function () {
                             appid: appId
                         };
 
+
+                        if (params.sid) {
+                            post.sid = sid;
+                        }
+
                         if (ts) {
                             post.ts = ts;
                         }
                         debug('==>get user from ', get_user_url, post);
-                        _context2.next = 23;
+                        _context2.next = 24;
                         return ctx.ajax({
                             method: 'POST',
                             uri: get_user_url,
@@ -116,33 +121,33 @@ Sync.getSyncUsers = function () {
                             json: true
                         });
 
-                    case 23:
+                    case 24:
                         response = _context2.sent;
                         result = response.body;
 
                         if (!(result && result.errcode === 0)) {
-                            _context2.next = 44;
+                            _context2.next = 45;
                             break;
                         }
 
                         data = result.data;
 
                         if (!(data && data.need_sync_users)) {
-                            _context2.next = 37;
+                            _context2.next = 38;
                             break;
                         }
 
                         users = data.need_sync_users;
                         i = 0;
 
-                    case 30:
+                    case 31:
                         if (!(i < users.length)) {
-                            _context2.next = 37;
+                            _context2.next = 38;
                             break;
                         }
 
                         user = users[i];
-                        _context2.next = 34;
+                        _context2.next = 35;
                         return userColl.update({
                             userid: user.userid
                         }, {
@@ -151,22 +156,22 @@ Sync.getSyncUsers = function () {
                             upsert: true
                         });
 
-                    case 34:
+                    case 35:
                         i++;
-                        _context2.next = 30;
+                        _context2.next = 31;
                         break;
 
-                    case 37:
+                    case 38:
 
                         debug("==> 删除已经删除的用户,保留这些用户", data.userids);
 
                         if (!(data && data.userids && data.userids.length > 0)) {
-                            _context2.next = 44;
+                            _context2.next = 45;
                             break;
                         }
 
                         debug("==> 删除已经删除的用户,保留这些用户", data.userids);
-                        _context2.next = 42;
+                        _context2.next = 43;
                         return userColl.update({
                             eid: eid,
                             userid: {
@@ -180,19 +185,19 @@ Sync.getSyncUsers = function () {
                             multi: true
                         });
 
-                    case 42:
+                    case 43:
                         result = _context2.sent;
 
                         debug("==> 删除用户返回", result.result);
 
-                    case 44:
+                    case 45:
                         return _context2.abrupt('return', true);
 
-                    case 45:
+                    case 46:
                         debug('==> 获取token为空');
                         return _context2.abrupt('return', false);
 
-                    case 47:
+                    case 48:
                     case 'end':
                         return _context2.stop();
                 }

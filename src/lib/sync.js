@@ -1,4 +1,4 @@
-var debug =require('debug')('koa2-sdk');
+var debug = require('debug')('koa2-sdk');
 
 var Sync = {};
 
@@ -55,6 +55,11 @@ Sync.getSyncUsers = async function(params, ctx) {
             eid: eid,
             appid: appId
         };
+        
+        if (params.sid) {
+            post.sid = sid;
+        }
+
         if (ts) {
             post.ts = ts;
         }
