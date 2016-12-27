@@ -27,25 +27,27 @@ module.exports = function (options) {
 
     var auth = function () {
         var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(ctx, next) {
-            var url;
+            var goToUrl, url;
             return regeneratorRuntime.wrap(function _callee$(_context) {
                 while (1) {
                     switch (_context.prev = _context.next) {
                         case 0:
+                            goToUrl = redirectUrl;
+
                             if (ctx.querystring) {
                                 if (redirectUrl.indexOf('?') > 0) {
-                                    redirectUrl += ctx.querystring;
+                                    goToUrl += ctx.querystring;
                                 } else {
-                                    redirectUrl += '?' + ctx.querystring;
+                                    goToUrl += '?' + ctx.querystring;
                                 }
                             }
-                            url = ssoUri + '?client_id=' + clientId + '&redirect_uri=' + redirectUrl + '&callback=' + authCallbackUrl;
+                            url = ssoUri + '?client_id=' + clientId + '&redirect_uri=' + goToUrl + '&callback=' + authCallbackUrl;
 
                             console.log('redirect to', url);
                             ctx.status = 301;
                             ctx.redirect(url);
 
-                        case 5:
+                        case 6:
                         case 'end':
                             return _context.stop();
                     }

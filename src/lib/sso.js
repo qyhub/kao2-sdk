@@ -24,14 +24,15 @@ module.exports = function(options) {
     debug(options);
 
     var auth = async function(ctx, next) {
+        var  goToUrl=redirectUrl;
         if (ctx.querystring) {
             if (redirectUrl.indexOf('?') > 0) {
-                redirectUrl += ctx.querystring;
+                goToUrl += ctx.querystring;
             } else {
-                redirectUrl += '?' + ctx.querystring;
+                goToUrl += '?' + ctx.querystring;
             }
         }
-        var url = ssoUri + '?client_id=' + clientId + '&redirect_uri=' + redirectUrl + '&callback=' + authCallbackUrl;
+        var url = ssoUri + '?client_id=' + clientId + '&redirect_uri=' + goToUrl + '&callback=' + authCallbackUrl;
         console.log('redirect to', url);
         ctx.status = 301;
         ctx.redirect(url);
